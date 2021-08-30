@@ -15,7 +15,6 @@ form{
   img{
   margin-top: 5%;
   margin-bottom: 1%;
-
 }
   .box div {
     width: 100px;
@@ -39,4 +38,10 @@ form{
     background-color: black;
     color: white;
     text-align: center;
+  }
+
+  h5{
+    margin: 0%;
+    padding: 0%;
+    
   }

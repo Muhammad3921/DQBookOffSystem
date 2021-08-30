@@ -12,14 +12,14 @@ app = Flask(__name__)
 masterdata = {}
 name1 = []
 dates1 = []
+
 def background_job():
     finalmsg = generateString(masterdata)
     masterdata.clear()
     sendmail(finalmsg)
-    print(masterdata)
 
 def threadtwo():
-    schedule.every(1).minutes.do(background_job)
+    schedule.every().thursday.at("23:59").do(background_job)
     while True:
      schedule.run_pending()
      time.sleep(60)
@@ -27,11 +27,9 @@ def threadtwo():
 @app.route("/", methods=['GET', 'POST'])
 def mainSys():
     if request.method == "POST":
-        name = request.form["name"].lower()
+        name = request.form["namess"]
         dates = request.form["date"]
         if(name in masterdata.keys()):
-            print(name)
-            print(dates)
             name1.clear()
             dates1.clear()
             name1.append(name)
@@ -39,7 +37,6 @@ def mainSys():
             return redirect("/duplicate", code=302)
 
         masterdata[name] = dates
-        print(prettify(masterdata, name))
         name = ""
         dates = ""
         return redirect("/done", code=302)
@@ -55,11 +52,7 @@ def dupe():
             name = name1[-1]
             dates1.clear()
             name1.clear()
-            print (name)
-            print(dates)
             masterdata[name] = dates
-            print(masterdata)
-            print(prettify(masterdata, name))
             name = ""
             dates = ""
             dates1.clear()
@@ -75,7 +68,6 @@ def dupe():
 def end():
     if request.method == "POST":
         if request.form.get("finish"):
-            print(generateString(masterdata))
             masterdata.clear()
             return redirect("/", code=302)
         else:
