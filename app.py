@@ -12,7 +12,6 @@ app = Flask(__name__)
 masterdata = {}
 name1 = []
 dates1 = []
-
 def background_job():
     finalmsg = generateString(masterdata)
     masterdata.clear()
