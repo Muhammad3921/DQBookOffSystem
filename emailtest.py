@@ -15,7 +15,7 @@ def sendmail(msg):
 
     try:
         sg = SendGridAPIClient(
-            '')
+            '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')
         response = sg.send(message)
         print(response.status_code)
         print(response.body)
