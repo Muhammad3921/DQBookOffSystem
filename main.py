@@ -4,59 +4,77 @@ from emailtest import generateString, sendmail
 import schedule
 import time
 import threading
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+EMPLOYEEDATA = os.getenv("EMPDATA")
 
 
+def threadtwo():
+    schedule.every().saturday.at("15:23").do(background_job)
+    while True:
+        schedule.run_pending()
+        time.sleep(30)
 
+
+thd = threading.Thread(target=threadtwo)
+thd.start()
 
 app = Flask(__name__)
 masterdata = {}
-name1 = []
-dates1 = []
+
 
 def background_job():
     finalmsg = generateString(masterdata)
     masterdata.clear()
     sendmail(finalmsg)
 
-def threadtwo():
-    schedule.every().thursday.at("23:59").do(background_job)
-    while True:
-     schedule.run_pending()
-     time.sleep(60)
 
 @app.route("/", methods=['GET', 'POST'])
 def mainSys():
     if request.method == "POST":
-        name = request.form["namess"]
-        dates = request.form["date"]
-        if(name in masterdata.keys()):
-            name1.clear()
-            dates1.clear()
-            name1.append(name)
-            dates1.append(dates)
-            return redirect("/duplicate", code=302)
-
-        masterdata[name] = dates
-        name = ""
-        dates = ""
-        return redirect("/done", code=302)
+        EmpId = request.form.get('EmpId')
+        if EmpId in EMPLOYEEDATA:
+            name = EMPLOYEEDATA[EmpId]
+            if name in masterdata:
+                return redirect("/loggedin", Name=name, datess=masterdata[name], code=302)
+            else:
+                return redirect("/loggedin", Name=name, datess="", code=302)
     else:
         return render_template('main.html')
+
+
+@app.route("/loggedin", methods=['GET', 'POST'])
+def loggedin():
+    if request.method == "POST":
+        dates = request.form["date"]
+        name = request.form["name"]
+        if name in masterdata:
+            return redirect("/duplicate", Name=name, newdates=dates, code=302)
+        else:
+            masterdata[name] = dates
+            return redirect("/done")
+
+    else:
+        return render_template('login.html')
+
+
+@app.route("/logInFail", methods=['GET', 'POST'])
+def logInFailed():
+    if request.method == "POST":
+        return redirect("/", code=302)
+    else:
+        return render_template('invalidLogin.html')
 
 
 @app.route("/duplicate", methods=['GET', 'POST'])
 def dupe():
     if request.method == "POST":
         if request.form.get("sub"):
-            dates = dates1[-1]
-            name = name1[-1]
-            dates1.clear()
-            name1.clear()
-            masterdata[name] = dates
-            name = ""
-            dates = ""
-            dates1.clear()
-            name1.clear()
+            
+
             return redirect("/done", code=302)
         else:
             return redirect("/", code=302)
@@ -76,31 +94,8 @@ def end():
         return render_template('sub.html')
 
 
-def prettify(a_dict, key):
-
-    todays_date = date.today()
-    x = []
-    z = []
-    temp = a_dict[key]
-    x = temp.split(", ")
-    for value in x:
-        y = value.split("-")
-        if (int(y[0]) == todays_date.year):
-            z.append(y[1]+"-"+y[2])
-            y.clear
-    a_dict[key] = z
-    z.clear
-    x.clear
-    temp = ""
-    return a_dict
-
 if __name__ == '__main__':
-    thd = threading.Thread(target=threadtwo)
-    thd.start()
     # This is used when running locally. Gunicorn is used to run the
     # application on Google App Engine. See entrypoint in app.yaml.
     app.run(host='127.0.0.1', port=8080, debug=True)
 # [END gae_flex_quickstart]
-
-
-

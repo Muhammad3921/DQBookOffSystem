@@ -2,21 +2,19 @@
 {%block body%}
 <div class="box">
   <img src="/static/dqimage.png">
-  <H1>Booking-Off System</H1>
+  <H1>Welcome {{Name}}</H1>
+  <H2>Here are your previous dates: {{datess}}</H2>
   <h5>Book-Off requests for the following week automatically submit on the Thursday of the week before @ 11:59 pm</h5>
   <h5>If you have missed the deadline please contact Celina for accomadations, and do not submit this form</h5>
 
-  <script>
-        function isNumberKey(evt){
-      var charCode = (evt.which) ? evt.which : evt.keyCode
-      if (charCode > 31 && (charCode < 48 || charCode > 57))
-          return false;
-      return true;
-  }
-  </script>
-  <form method="POST"> 
-  <H2>Login with your employee ID:</H2>
-  <input name="EmpID" type="number" onkeypress="return isNumberKey(event)"/>
+
+
+  <form method="POST">
+  
+    <H2>Select your Dates</H2>
+    <input autocomplete="off" type="text" name="date" id="dates">
+    <button type="submit">Submit</button>
+    <input type="hidden" id="index" name="name" value="{{ Name }}">
   </form>
 
 </div>
@@ -25,5 +23,11 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>flatpickr("#dates", {
+    mode: "multiple",
+    dateFormat: "Y-m-d",
+    minDate: "today",
+    yearSelectorType: "static"
 
+  });</script>
 {%endblock%}
