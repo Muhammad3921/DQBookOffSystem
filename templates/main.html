@@ -17,6 +17,9 @@
   <form method="POST"> 
   <H2>Login with your employee ID:</H2>
   <input name="EmpID" type="number" onkeypress="return isNumberKey(event)"/>
+  <H2>Select your Dates</H2>
+  <input autocomplete="off" type="text" name="date" id="dates">
+  <button type="submit">Submit</button>
   </form>
 
 </div>
@@ -25,5 +28,12 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>flatpickr("#dates", {
+  mode: "multiple",
+  dateFormat: "Y-m-d",
+  minDate: "today",
+  yearSelectorType: "static"
+
+});</script>
 
 {%endblock%}

@@ -1,64 +1,85 @@
 from flask import Flask, render_template, request, url_for, redirect
 from datetime import date
-from emailtest import generateString, sendmail
 import schedule
 import time
 import threading
-import os
-from dotenv import load_dotenv
+from emailtest import sendmail
 
-load_dotenv()
 
-EMPLOYEEDATA = os.getenv("EMPDATA")
+EMPLOYEEDATA = {
+    "3474" : "Muhammad"
+}
 
+def background_job():
+    masterstring = ''
+    simplifydata()
+    for values in masterdata:
+        masterstring += "<strong>"+values+"</strong>: "+masterdata[values]+"<br>"
+    sendmail(masterstring)
+    masterdata.clear()
 
 def threadtwo():
-    schedule.every().saturday.at("15:23").do(background_job)
+    schedule.every().thursday.at("00:45").do(background_job)
     while True:
         schedule.run_pending()
         time.sleep(30)
+        print("alooo")
 
 
-thd = threading.Thread(target=threadtwo)
-thd.start()
 
 app = Flask(__name__)
 masterdata = {}
 
 
-def background_job():
-    finalmsg = generateString(masterdata)
-    masterdata.clear()
-    sendmail(finalmsg)
+def simplifydata():
+    months=[
+        "January",
+        "February"
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    ]
+    for key in masterdata:
+        conststring = ''
+        dates = masterdata[key]
+        x = dates.split(", ")
+        for values in x:
+            singledate = values.split("-")
+            conststring += singledate[2] +" of "+months[int(singledate[1])-1]+", "
+        masterdata[key] = conststring
 
+    
+
+@app.before_first_request
+def runthread():
+    thd = threading.Thread(target=threadtwo)
+    thd.start()
 
 @app.route("/", methods=['GET', 'POST'])
 def mainSys():
     if request.method == "POST":
-        EmpId = request.form.get('EmpId')
+        EmpId = request.form.get('EmpID')
+        dates = request.form.get('date')
+        print(EmpId)
+        print(dates)
         if EmpId in EMPLOYEEDATA:
             name = EMPLOYEEDATA[EmpId]
             if name in masterdata:
-                return redirect("/loggedin", Name=name, datess=masterdata[name], code=302)
+                return redirect(url_for('dupe',names2 = name,oldates=masterdata[name],newdates = dates))
             else:
-                return redirect("/loggedin", Name=name, datess="", code=302)
+                masterdata[name] = dates
+                return redirect("/done")
+        else:
+            return redirect("/logInFail")
     else:
         return render_template('main.html')
-
-
-@app.route("/loggedin", methods=['GET', 'POST'])
-def loggedin():
-    if request.method == "POST":
-        dates = request.form["date"]
-        name = request.form["name"]
-        if name in masterdata:
-            return redirect("/duplicate", Name=name, newdates=dates, code=302)
-        else:
-            masterdata[name] = dates
-            return redirect("/done")
-
-    else:
-        return render_template('login.html')
 
 
 @app.route("/logInFail", methods=['GET', 'POST'])
@@ -71,24 +92,30 @@ def logInFailed():
 
 @app.route("/duplicate", methods=['GET', 'POST'])
 def dupe():
+    name = request.args.get('names2')
+    replaceddates = request.args.get('newdates')
+    old = request.args.get('oldates')
     if request.method == "POST":
         if request.form.get("sub"):
-            
-
+            masterdata[name] = replaceddates
             return redirect("/done", code=302)
         else:
             return redirect("/", code=302)
     else:
-        return render_template('dupe.html')
+        return render_template('dupe.html', olddates = old, newdates = replaceddates)
 
 
 @app.route("/done", methods=['GET', 'POST'])
 def end():
     if request.method == "POST":
         if request.form.get("finish"):
+            print(masterdata)
+            simplifydata()
+            print(masterdata)
             masterdata.clear()
             return redirect("/", code=302)
         else:
+            print(masterdata)
             return redirect("/", code=302)
     else:
         return render_template('sub.html')

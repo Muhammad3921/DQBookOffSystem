@@ -6,7 +6,17 @@
 <H3
     style="display: flex; align-items: center; justify-content: center; flex-direction: column; font: 2em timesnewroman; margin-top: 3%;">
     Do you wish to continue?</H3>
+<H3
+    style="display: flex; align-items: center; justify-content: center; flex-direction: column; font: 2em timesnewroman; margin-top: 3%;">
+    Your previous dates: {{olddates}}</H3>
+
+    <H3
+    style="display: flex; align-items: center; justify-content: center; flex-direction: column; font: 2em timesnewroman; margin-top: 3%;">
+    New dates: {{newdates}}</H3>
 <form action="" method="post">
+    <input type="hidden" name="name" value="">
+    <input type="hidden" name="olddate" value="{{olddates}}">
+    <input type="hidden" name="newdate" value="{{newdates}}">
     <button style="margin-bottom: 3%;" type="submit" name="sub" value="sub">Submit</button>
     <button type="submit" name="back" value="back">Go back</button>
 </form>

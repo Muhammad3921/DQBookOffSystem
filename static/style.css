@@ -16,21 +16,21 @@ form{
   margin-top: 5%;
   margin-bottom: 1%;
 }
-  .box div {
+.box div {
     width: 100px;
     height: 100px;
   }
       
-  body{
+body{
     background-color: #2c9de9;
     
   }
 
-  input{
+input{
       margin-bottom: 1em;
   }
 
-  #footer{
+#footer{
     position: fixed;
     left: 0;
     bottom: 0;
@@ -40,8 +40,10 @@ form{
     text-align: center;
   }
 
-  h5{
+h5{
     margin: 0%;
     padding: 0%;
     
   }
+
+  
